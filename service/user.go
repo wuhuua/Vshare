@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/Iscolito/Vshare/model"
@@ -13,7 +12,6 @@ import (
 func Register(name string, password string) (int64, string, error) {
 	userDao := repository.NewUserDaoInstance()
 	if user, _ := userDao.GetUserByName(name); user.Id != 0 {
-		fmt.Printf("error is %+v", *user)
 		util.Logger.Error("name exists")
 		return 0, "", errors.New("name exists")
 	}
