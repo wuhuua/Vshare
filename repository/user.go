@@ -3,6 +3,7 @@ package repository
 import (
 	"sync"
 
+	"github.com/Iscolito/Vshare/model"
 	"github.com/Iscolito/Vshare/util"
 	"gorm.io/gorm"
 )
@@ -21,8 +22,8 @@ func NewUserDaoInstance() *UserDao {
 	return userDao
 }
 
-func (*UserDao) GetUserById(id int64) (*User, error) {
-	users := User{}
+func (*UserDao) GetUserById(id int64) (*model.User, error) {
+	users := model.User{}
 	err := db.Where("id = ?", id).Find(&users).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -34,8 +35,8 @@ func (*UserDao) GetUserById(id int64) (*User, error) {
 	return &users, nil
 }
 
-func (*UserDao) GetUserByName(name string) (*User, error) {
-	users := User{}
+func (*UserDao) GetUserByName(name string) (*model.User, error) {
+	users := model.User{}
 	err := db.Where("name = ?", name).Find(&users).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -48,7 +49,7 @@ func (*UserDao) GetUserByName(name string) (*User, error) {
 }
 
 func (*UserDao) InitUserByName(name string, password string) (int64, error) {
-	user := &User{Name: name, Password: password}
+	user := &model.User{Name: name, Password: password}
 	db.Create(user)
 	return user.Id, nil
 }

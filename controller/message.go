@@ -2,71 +2,44 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
-	"sync/atomic"
-	"time"
 
-	"github.com/Iscolito/Vshare/repository"
+	"github.com/Iscolito/Vshare/model"
+	"github.com/Iscolito/Vshare/service"
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-var tempChat = map[string][]repository.Message{}
-
-var messageIdSequence = int64(1)
+var tempChat = map[string][]model.Message{}
 
 type ChatResponse struct {
-	repository.Response
-	MessageList []repository.Message `json:"message_list"`
+	model.Response
+	MessageList []model.Message `json:"message_list"`
 }
 
-// MessageAction no practical effect, just check if token is valid
 func MessageAction(ctx context.Context, c *app.RequestContext) {
 	token := c.Query("token")
-	toUserId := c.Query("to_user_id")
+	strAimId := c.Query("to_user_id")
+	aimId, _ := strconv.ParseInt(strAimId, 10, 64)
 	content := c.Query("content")
-
-	if user, exist := usersLoginInfo[token]; exist {
-		userIdB, _ := strconv.Atoi(toUserId)
-		chatKey := genChatKey(user.Id, int64(userIdB))
-
-		atomic.AddInt64(&messageIdSequence, 1)
-		curMessage := repository.Message{
-			Id:         messageIdSequence,
-			Content:    content,
-			CreateTime: time.Now().Format(time.Kitchen),
-		}
-
-		if messages, exist := tempChat[chatKey]; exist {
-			tempChat[chatKey] = append(messages, curMessage)
-		} else {
-			tempChat[chatKey] = []repository.Message{curMessage}
-		}
-		c.JSON(http.StatusOK, repository.Response{StatusCode: 0})
+	validId, _ := service.GetTokenId(token)
+	if validId == 0 {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 	} else {
-		c.JSON(http.StatusOK, repository.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		service.SendMessageById(validId, aimId, content)
+		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 	}
 }
 
-// MessageChat all users have same follow list
 func MessageChat(ctx context.Context, c *app.RequestContext) {
 	token := c.Query("token")
-	toUserId := c.Query("to_user_id")
-
-	if user, exist := usersLoginInfo[token]; exist {
-		userIdB, _ := strconv.Atoi(toUserId)
-		chatKey := genChatKey(user.Id, int64(userIdB))
-
-		c.JSON(http.StatusOK, ChatResponse{Response: repository.Response{StatusCode: 0}, MessageList: tempChat[chatKey]})
+	strAimId := c.Query("to_user_id")
+	aimId, _ := strconv.ParseInt(strAimId, 10, 64)
+	validId, _ := service.GetTokenId(token)
+	if validId == 0 {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 	} else {
-		c.JSON(http.StatusOK, repository.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		messages, _ := service.GetMessageList(validId, aimId)
+		c.JSON(http.StatusOK, ChatResponse{Response: model.Response{StatusCode: 0}, MessageList: messages})
 	}
-}
-
-func genChatKey(userIdA int64, userIdB int64) string {
-	if userIdA > userIdB {
-		return fmt.Sprintf("%d_%d", userIdB, userIdA)
-	}
-	return fmt.Sprintf("%d_%d", userIdA, userIdB)
 }

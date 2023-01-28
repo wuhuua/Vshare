@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Iscolito/Vshare/repository"
+	"github.com/Iscolito/Vshare/model"
 	"github.com/Iscolito/Vshare/service"
 	"github.com/cloudwego/hertz/pkg/app"
 )
@@ -13,7 +13,7 @@ import (
 // usersLoginInfo use map to store user info, and key is username+password for demo
 // user data will be cleared every time the server starts
 // test data: username=zhanglei, password=douyin
-var usersLoginInfo = map[string]repository.User{
+var usersLoginInfo = map[string]model.User{
 	"zhangleidouyin": {
 		Id:            1,
 		Name:          "zhanglei",
@@ -24,14 +24,14 @@ var usersLoginInfo = map[string]repository.User{
 }
 
 type UserLoginResponse struct {
-	repository.Response
+	model.Response
 	UserId int64  `json:"user_id,omitempty"`
 	Token  string `json:"token"`
 }
 
 type UserResponse struct {
-	repository.Response
-	User repository.User `json:"user"`
+	model.Response
+	User model.User `json:"user"`
 }
 
 func Register(ctx context.Context, c *app.RequestContext) {
@@ -41,11 +41,11 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	id, token, _ := service.Register(username, password)
 	if id == 0 {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: repository.Response{StatusCode: 1, StatusMsg: "User already exist"},
+			Response: model.Response{StatusCode: 1, StatusMsg: "User already exist"},
 		})
 	} else {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: repository.Response{StatusCode: 0},
+			Response: model.Response{StatusCode: 0},
 			UserId:   id,
 			Token:    token,
 		})
@@ -60,29 +60,29 @@ func Login(ctx context.Context, c *app.RequestContext) {
 
 	if id != 0 {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: repository.Response{StatusCode: 0},
+			Response: model.Response{StatusCode: 0},
 			UserId:   id,
 			Token:    token,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: repository.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist or password incorrect"},
 		})
 	}
 }
 
 func UserInfo(ctx context.Context, c *app.RequestContext) {
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	token := c.Query("token")
-	user, err := service.GetUserInfo(int64(id), token)
-	if err != nil {
+	user, err := service.GetUserInfo(id, token)
+	if err == nil {
 		c.JSON(http.StatusOK, UserResponse{
-			Response: repository.Response{StatusCode: 0},
+			Response: model.Response{StatusCode: 0},
 			User:     *user,
 		})
 	} else {
 		c.JSON(http.StatusOK, UserResponse{
-			Response: repository.Response{StatusCode: 1, StatusMsg: "User doesn't exist or no permission"},
+			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist or no permission"},
 		})
 	}
 }

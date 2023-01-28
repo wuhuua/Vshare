@@ -7,13 +7,13 @@ import (
 	"net"
 	"sync"
 
-	"github.com/Iscolito/Vshare/repository"
+	"github.com/Iscolito/Vshare/model"
 )
 
 var chatConnMap = sync.Map{}
 
 func RunMessageServer() {
-	listen, err := net.Listen("tcp", "127.0.0.1:9090")
+	listen, err := net.Listen("tcp", "127.0.0.1:9099")
 	if err != nil {
 		fmt.Printf("Run message sever failed: %v\n", err)
 		return
@@ -44,9 +44,9 @@ func process(conn net.Conn) {
 			continue
 		}
 
-		var event = repository.MessageSendEvent{}
+		var event = model.MessageSendEvent{}
 		_ = json.Unmarshal(buf[:n], &event)
-		fmt.Printf("Receive Message：%+v\n", event)
+		fmt.Printf("Receive Message:%+v\n", event)
 
 		fromChatKey := fmt.Sprintf("%d_%d", event.UserId, event.ToUserId)
 		if len(event.MsgContent) == 0 {
@@ -61,7 +61,7 @@ func process(conn net.Conn) {
 			continue
 		}
 
-		pushEvent := repository.MessagePushEvent{
+		pushEvent := model.MessagePushEvent{
 			FromUserId: event.UserId,
 			MsgContent: event.MsgContent,
 		}

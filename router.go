@@ -10,6 +10,8 @@ func initRouters(h *server.Hertz) {
 
 	apiRouter := h.Group("/douyin")
 
+	h.GET("/stream/:name", controller.VideoFile)
+
 	// basic apis
 	apiRouter.GET("/feed/", controller.Feed)
 	apiRouter.GET("/user/", controller.UserInfo)

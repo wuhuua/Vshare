@@ -3,6 +3,7 @@ package repository
 import (
 	"sync"
 
+	"github.com/Iscolito/Vshare/model"
 	"github.com/Iscolito/Vshare/util"
 	"gorm.io/gorm"
 )
@@ -21,8 +22,8 @@ func NewVideoDaoInstance() *VideoDao {
 	return videoDao
 }
 
-func (*VideoDao) GetVideoById(id int64) (*Video, error) {
-	streams := Video{}
+func (*VideoDao) GetVideoById(id int64) (*model.Video, error) {
+	streams := model.Video{}
 	err := db.Where("id = ?", id).Find(&streams).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
@@ -34,14 +35,33 @@ func (*VideoDao) GetVideoById(id int64) (*Video, error) {
 	return &streams, nil
 }
 
-func (*VideoDao) GetVideos(num int) ([]Video, error) {
-	streams := make([]Video, 0)
+func (*VideoDao) GetVideos(num int) ([]model.Video, error) {
+	streams := make([]model.Video, 0)
 	err := db.Order("id desc").Limit(num).Find(&streams).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	}
 	if err != nil {
 		util.Logger.Error("find videos err:" + err.Error())
+		return nil, err
+	}
+	return streams, nil
+}
+
+func (*VideoDao) InitVideo(videoPath string, coverPath string, userId int64, videoName string) error {
+	video := &model.Video{UserId: userId, PlayUrl: videoPath, CoverUrl: coverPath, VideoName: videoName}
+	db.Create(video)
+	return nil
+}
+
+func (*VideoDao) GetVideoList(userId int64) ([]model.Video, error) {
+	streams := make([]model.Video, 0)
+	err := db.Order("id desc").Where("userid = ?", userId).Find(&streams).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		util.Logger.Error("find lists err:" + err.Error())
 		return nil, err
 	}
 	return streams, nil
