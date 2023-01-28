@@ -17,9 +17,15 @@ type FeedResponse struct {
 	NextTime  int64         `json:"next_time,omitempty"`
 }
 
-// Feed same demo video list for every request
 func Feed(ctx context.Context, c *app.RequestContext) {
-	videos, _ := service.GetStreams()
+	token := c.Query("token")
+	validId, _ := service.GetTokenId(token)
+	var videos []model.Video
+	if token == "" || validId == 0 {
+		videos, _ = service.GetStreams()
+	} else {
+		videos, _ = service.GetStreamsById(validId)
+	}
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  model.Response{StatusCode: 0},
 		VideoList: videos,

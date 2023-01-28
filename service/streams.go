@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/Iscolito/Vshare/model"
 	"github.com/Iscolito/Vshare/repository"
@@ -24,6 +25,30 @@ func GetStreams() ([]model.Video, error) {
 			for i, _ := range streams {
 				author, _ = userDao.GetUserById(streams[i].UserId)
 				streams[i].Author = *author
+			}
+			return streams, nil
+		}
+	} else {
+		util.Logger.Error("find videos process error")
+		return nil, errors.New("find videos process error")
+	}
+}
+
+func GetStreamsById(userId int64) ([]model.Video, error) {
+	VideoDao := repository.NewVideoDaoInstance()
+	streams, err := VideoDao.GetVideos(30)
+	if err == nil {
+		if streams == nil {
+			util.Logger.Error("no videos")
+			return nil, errors.New("no videos")
+		} else {
+			userDao := repository.NewUserDaoInstance()
+			favoriteDao := repository.NewFavoriteDaoInstance()
+			var author *model.User
+			for i, _ := range streams {
+				author, _ = userDao.GetUserById(streams[i].UserId)
+				streams[i].Author = *author
+				streams[i].IsFavorite, _ = favoriteDao.IsFavorite(strconv.FormatInt(userId, 10), strconv.FormatInt(streams[i].Id, 10))
 			}
 			return streams, nil
 		}

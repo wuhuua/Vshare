@@ -31,7 +31,7 @@ func (*CommentDao) InitCommentByContent(text string, date string, userId int64, 
 
 func (*CommentDao) GetCommentByVideoId(videoId int64) ([]model.Comment, error) {
 	comments := make([]model.Comment, 0)
-	err := db.Order("id desc").Find(&comments).Error
+	err := db.Order("id desc").Where("videoid = ?", videoId).Find(&comments).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	}

@@ -54,17 +54,18 @@ func Publish(ctx context.Context, c *app.RequestContext) {
 }
 
 func PublishList(ctx context.Context, c *app.RequestContext) {
-	userId, _ := strconv.ParseInt(c.Query("id"), 10, 64)
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	token := c.Query("token")
 	validId, _ := service.GetTokenId(token)
-	if validId != userId {
+	if validId == 0 {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "No access permission"})
+	} else {
+		videos, _ := service.GetStreamList(userId)
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: model.Response{
+				StatusCode: 0,
+			},
+			VideoList: videos,
+		})
 	}
-	videos, _ := service.GetStreamList(userId)
-	c.JSON(http.StatusOK, VideoListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		VideoList: videos,
-	})
 }

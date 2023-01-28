@@ -10,8 +10,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-var tempChat = map[string][]model.Message{}
-
 type ChatResponse struct {
 	model.Response
 	MessageList []model.Message `json:"message_list"`

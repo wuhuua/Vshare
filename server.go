@@ -5,7 +5,6 @@ import (
 
 	"github.com/Iscolito/Vshare/repository"
 	"github.com/Iscolito/Vshare/service"
-	"github.com/Iscolito/Vshare/test"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/network/standard"
 )
@@ -45,5 +44,5 @@ func RunServer() {
 }
 
 func TestServer() {
-	test.Test_user(mysqlIp, mysqlPassword, redisIp, redisPassword)
+	//test.Test_favorite(mysqlIp, mysqlPassword, redisIp, redisPassword)
 }

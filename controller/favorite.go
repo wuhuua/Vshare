@@ -25,10 +25,10 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 
 func FavoriteList(ctx context.Context, c *app.RequestContext) {
 	token := c.Query("token")
-	strId := c.Query("video_id")
+	strId := c.Query("user_id")
 	userId, _ := strconv.ParseInt(strId, 10, 64)
 	validId, _ := service.GetTokenId(token)
-	if validId != userId {
+	if validId == 0 {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "No permission to look up"})
 	} else {
 		videos, _ := service.GetLikeListById(userId)
