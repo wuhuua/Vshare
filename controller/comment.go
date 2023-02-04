@@ -20,7 +20,6 @@ type CommentActionResponse struct {
 	Comment model.Comment `json:"comment,omitempty"`
 }
 
-// CommentAction no practical effect, just check if token is valid
 func CommentAction(ctx context.Context, c *app.RequestContext) {
 	token := c.Query("token")
 	actionType := c.Query("action_type")
@@ -50,12 +49,14 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 }
 
 func CommentList(ctx context.Context, c *app.RequestContext) {
-	token := c.Query("token")
-	userId, _ := service.GetTokenId(token)
-	if userId == 0 {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "No permission"})
-		return
-	}
+	/*
+		token := c.Query("token")
+		userId, _ := service.GetTokenId(token)
+		if userId == 0 {
+			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "No permission"})
+			return
+		}
+	*/
 	videoId, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	comments, err := service.GetCommentList(videoId)
 	if err != nil {

@@ -4,13 +4,15 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/Iscolito/Vshare/config"
 	"github.com/Iscolito/Vshare/model"
 	"github.com/Iscolito/Vshare/repository"
 	"github.com/Iscolito/Vshare/util"
 )
 
 const coverName = "vshare.png"
-const videoServer = "192.168.3.9:8080"
+
+var videoServer = config.LoadConfig().StaticIp
 
 func GetStreams() ([]model.Video, error) {
 	VideoDao := repository.NewVideoDaoInstance()

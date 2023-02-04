@@ -15,6 +15,11 @@ type UserListResponse struct {
 	UserList []model.User `json:"user_list"`
 }
 
+type FriendListResponse struct {
+	model.Response
+	FriendList []model.Friend `json:"user_list"`
+}
+
 func RelationAction(ctx context.Context, c *app.RequestContext) {
 	token := c.Query("token")
 	action, _ := strconv.Atoi(c.Query("action_type"))
@@ -75,11 +80,11 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "No access permission"})
 	} else {
 		friends, _ := service.GetFriendsById(userId)
-		c.JSON(http.StatusOK, UserListResponse{
+		c.JSON(http.StatusOK, FriendListResponse{
 			Response: model.Response{
 				StatusCode: 0,
 			},
-			UserList: friends,
+			FriendList: friends,
 		})
 	}
 }

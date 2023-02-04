@@ -2,7 +2,6 @@ package repository
 
 import (
 	"sync"
-	"time"
 )
 
 type ChatDao struct {
@@ -19,10 +18,22 @@ func NewChatDaoInstance() *ChatDao {
 	return chatDao
 }
 
-func (*ChatDao) InitMessage(chatRoom string, text string, hour int) (int64, error) {
-	return rdb[5].LPush(chatRoom, text, time.Duration(hour)*time.Hour).Result()
+func (*ChatDao) InitMessage(chatRoom string, text string) (int64, error) {
+	return rdb[5].LPush(chatRoom, text).Result()
 }
 
-func (*ChatDao) GetMessage(chatRoom string) ([]string, error) {
-	return rdb[5].LRange(chatRoom, 0, 30).Result()
+func (*ChatDao) GetMessage(chatRoom string, num int64) ([]string, error) {
+	return rdb[5].LRange(chatRoom, 0, num).Result()
+}
+
+func (*ChatDao) InitChatRoom(chatRoom string, initMessage string) error {
+	exist, err := rdb[5].Exists(chatRoom).Result()
+	if err != nil {
+		return err
+	}
+	if exist == 1 {
+		return nil
+	}
+	rdb[5].LPush(chatRoom, initMessage).Result()
+	return nil
 }

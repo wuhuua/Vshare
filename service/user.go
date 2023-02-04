@@ -9,13 +9,15 @@ import (
 	"github.com/Iscolito/Vshare/util"
 )
 
+const headicon = "https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/08772ed11ac6445b8e3365f9ad88b3d9~tplv-k3u1fbpfcp-watermark.image?"
+
 func Register(name string, password string) (int64, string, error) {
 	userDao := repository.NewUserDaoInstance()
 	if user, _ := userDao.GetUserByName(name); user.Id != 0 {
 		util.Logger.Error("name exists")
 		return 0, "", errors.New("name exists")
 	}
-	id, _ := userDao.InitUserByName(name, password)
+	id, _ := userDao.InitUserByName(name, password, headicon)
 	token := Tokenize(name + password + util.GetDate())
 	err := SendToken(token, id)
 	if err != nil {

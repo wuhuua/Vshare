@@ -33,12 +33,21 @@ type User struct {
 	FollowCount   int64  `json:"follow_count,omitempty" gorm:"column:followcount"`
 	FollowerCount int64  `json:"follower_count,omitempty" gorm:"column:followercount"`
 	IsFollow      bool   `json:"is_follow,omitempty" gorm:"-"`
+	HeadIcon      string `json:"avatar,omitempty" gorm:"column:headicon"`
+}
+
+type Friend struct {
+	User
+	Message string `json:"message,omitempty"`
+	MsgType int64  `json:"msgType,omitempty"`
 }
 
 type Message struct {
 	Id         int64  `json:"id,omitempty"`
 	Content    string `json:"content,omitempty"`
 	CreateTime string `json:"create_time,omitempty"`
+	ToUserId   int64  `json:"to_user_id,omitempty"`
+	FromUserId int64  `json:"from_user_id,omitempty"`
 }
 
 type MessageSendEvent struct {

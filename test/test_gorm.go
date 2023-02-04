@@ -7,6 +7,8 @@ import (
 	"github.com/Iscolito/Vshare/repository"
 )
 
+const headicon = "https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/08772ed11ac6445b8e3365f9ad88b3d9~tplv-k3u1fbpfcp-watermark.image?"
+
 func Test_gorm(ip string, password string) {
 	repository.InitMySQL(ip, password)
 	var user *model.User
@@ -19,7 +21,7 @@ func Test_gorm(ip string, password string) {
 	user, _ = repository.NewUserDaoInstance().GetUserByName(name)
 	fmt.Println("按照用户名查找到id")
 	fmt.Println(user.Id)
-	id, _ = repository.NewUserDaoInstance().InitUserByName("wuhuua", "12345678")
+	id, _ = repository.NewUserDaoInstance().InitUserByName("wuhuua", "12345678", headicon)
 	fmt.Println("创建新用户,id为:")
 	fmt.Println(id)
 	user, _ = repository.NewUserDaoInstance().GetUserById(id)

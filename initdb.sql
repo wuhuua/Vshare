@@ -8,13 +8,14 @@ CREATE TABLE `user`
 	`password`		varchar(32)			NOT NULL DEFAULT '' COMMENT '用户密码',
 	`followcount`   bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '关注人数',
 	`followercount` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '粉丝人数',
+	`headicon`		varchar(128)		NOT NULL DEFAULT 0 COMMENT '头像地址',
 	PRIMARY KEY(`id`)
 ) ENGINE = InnoDB
  DEFAULT CHARSET = utf8mb4 COMMENT ='用户表';
 
  INSERT INTO `user`
- VALUES (20230001, 'Iori','12345678',0,0),
-		(20230002, 'Misoda','12345678',0,0);
+ VALUES (20230001, 'Iori','12345678',0,0,"https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d94b31bfa5a74db9b7d448e6ab3bc3e8~tplv-k3u1fbpfcp-watermark.image?"),
+		(20230002, 'Misoda','12345678',0,0,"https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/05ea8220091d4a2a82c85f68c900368d~tplv-k3u1fbpfcp-watermark.image?");
 
 DROP TABLE IF EXISTS `video`;
 CREATE TABLE `video`

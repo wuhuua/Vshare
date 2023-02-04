@@ -48,8 +48,8 @@ func (*UserDao) GetUserByName(name string) (*model.User, error) {
 	return &users, nil
 }
 
-func (*UserDao) InitUserByName(name string, password string) (int64, error) {
-	user := &model.User{Name: name, Password: password}
+func (*UserDao) InitUserByName(name string, password string, headicon string) (int64, error) {
+	user := &model.User{Name: name, Password: password, HeadIcon: headicon}
 	db.Create(user)
 	return user.Id, nil
 }

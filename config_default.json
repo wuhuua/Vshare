@@ -1,0 +1,8 @@
+{
+    "hostIp":       "127.0.0.1:8080",
+    "mysqlIp":       "127.0.0.1:3306",
+    "mysqlPassword": "12345678",
+    "redisIp":       "127.0.0.1:6379",
+    "redisPassword": "",
+    "staticIp":      "127.0.0.1:8080"
+}
