@@ -9,7 +9,7 @@ import (
 )
 
 var db *gorm.DB
-var rdb [6]*redis.Client
+var rdb [7]*redis.Client
 
 func InitMySQL(ip string, password string) error {
 	var err error

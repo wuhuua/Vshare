@@ -26,22 +26,40 @@ func formatMessage(text string, userId int64, aimId int64) string {
 func SendMessageById(userId int64, aimId int64, text string) {
 	chatDao := repository.NewChatDaoInstance()
 	chatDao.InitMessage(getChatRoom(userId, aimId), formatMessage(text, userId, aimId))
+	chatDao.ChatCheckPoint(strconv.FormatInt(aimId, 10), strconv.FormatInt(userId, 10), 2, 1)
 }
 
 func GetMessageList(userId int64, aimId int64) ([]model.Message, error) {
 	chatDao := repository.NewChatDaoInstance()
-	messages, _ := chatDao.GetMessage(getChatRoom(userId, aimId), 30)
+	chatRoom := getChatRoom(userId, aimId)
+	strUserId := strconv.FormatInt(userId, 10)
+	strAimId := strconv.FormatInt(aimId, 10)
+	msgNum := chatDao.ChatCheckPoint(strUserId, strAimId, 2, 0)
+	// 此处作为返回消息数量的最大值,留出修改的接口
+	if msgNum == -1 {
+		msgNum = 30
+	} else if msgNum == 0 {
+		var emptyChatList []model.Message
+		return emptyChatList, nil
+	}
+	messages, _ := chatDao.GetMessage(chatRoom, msgNum)
 	lenHeader := len(util.GetTime())
-	lenUserId := len(strconv.FormatInt(userId, 10))
-	lenAimId := len(strconv.FormatInt(aimId, 10))
+	lenUserId := len(strUserId)
+	lenAimId := len(strAimId)
 	lenId := lenUserId + lenAimId
 	chatList := make([]model.Message, len(messages))
+	var strTime string
 	for i, message := range messages {
-		chatList[i].Id = int64(20230001 + i)
-		chatList[i].Content = message[lenHeader+lenId:]
+		num := len(messages) - 1 - i
+		chatList[num].Id = int64(20230001 + num)
+		chatList[num].Content = message[lenHeader+lenId:]
+		/* 前端demo暂时要求返回int64类型的数据
 		chatList[i].CreateTime = message[:lenHeader]
-		chatList[i].FromUserId, _ = strconv.ParseInt(message[lenHeader:lenHeader+lenUserId], 10, 64)
-		chatList[i].ToUserId, _ = strconv.ParseInt(message[lenHeader+lenUserId:lenHeader+lenId], 10, 64)
+		*/
+		strTime = message[:lenHeader]
+		chatList[num].CreateTime, _ = strconv.ParseInt(strTime[11:13]+strTime[14:16], 10, 64)
+		chatList[num].FromUserId, _ = strconv.ParseInt(message[lenHeader:lenHeader+lenUserId], 10, 64)
+		chatList[num].ToUserId, _ = strconv.ParseInt(message[lenHeader+lenUserId:lenHeader+lenId], 10, 64)
 	}
 	return chatList, nil
 }

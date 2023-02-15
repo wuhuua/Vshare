@@ -15,7 +15,9 @@ var mysqlIp = config.LoadConfig().MysqlIp
 var mysqlPassword = config.LoadConfig().MysqlPassword
 var redisIp = config.LoadConfig().RedisIp
 var redisPassword = config.LoadConfig().RedisPassword
-var redisbase = []int{0, 1, 2, 3, 4, 5} //Redis数据库编号,0号缓存token,1号缓存关注列表,2号缓存被关注列表,3号缓存视频点赞,4号缓存用户喜欢,5存储聊天记录
+
+// Redis数据库编号,0号缓存token,1号缓存关注列表,2号缓存被关注列表,3号缓存视频点赞,4号缓存用户喜欢,5存储聊天记录,6存储聊天指针缓存
+var redisbase = []int{0, 1, 2, 3, 4, 5, 6}
 
 func RunServer() {
 	var err error
