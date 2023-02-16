@@ -3,7 +3,6 @@ package repository
 import (
 	"strconv"
 	"sync"
-	"time"
 )
 
 type ChatDao struct {
@@ -45,12 +44,10 @@ func (*ChatDao) ChatCheckPoint(userId string, aimId string, gap int, checkType i
 	exist, _ := rdb[6].Exists(chatKey).Result()
 	var res string
 	var msgNum int64
-	/* 常规情况下处于轮询状态,时间戳始终更新,exist!=0
-	* 出现exist==0时说明当前用户刚好打开聊天框,此时返回系统设计的最多返回条数
-	 */
+	// 用户打开聊天框时初始化用户端推送缓存
 	if exist == 0 {
 		if checkType == 0 {
-			rdb[6].Set(chatKey, checkType, time.Duration(gap)*time.Second)
+			rdb[6].Set(chatKey, checkType, 0)
 		}
 		return -1
 	} else {
@@ -58,7 +55,7 @@ func (*ChatDao) ChatCheckPoint(userId string, aimId string, gap int, checkType i
 		if checkType == 0 {
 			res, _ = rdb[6].Get(chatKey).Result()
 			msgNum, _ = strconv.ParseInt(res, 10, 64)
-			rdb[6].Set(chatKey, checkType, time.Duration(gap)*time.Second)
+			rdb[6].Set(chatKey, checkType, 0)
 			return msgNum
 			// 如果是发送消息状态，则向对方的消息redis库中推送一条数据
 		} else {

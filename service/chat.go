@@ -42,7 +42,7 @@ func GetMessageList(userId int64, aimId int64) ([]model.Message, error) {
 		var emptyChatList []model.Message
 		return emptyChatList, nil
 	}
-	messages, _ := chatDao.GetMessage(chatRoom, msgNum)
+	messages, _ := chatDao.GetMessage(chatRoom, msgNum-1)
 	lenHeader := len(util.GetTime())
 	lenUserId := len(strUserId)
 	lenAimId := len(strAimId)
